@@ -6,31 +6,31 @@
 /*   By: tjun-yu <tjun-yu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 14:49:36 by tjun-yu           #+#    #+#             */
-/*   Updated: 2024/03/05 10:56:36 by tjun-yu          ###   ########.fr       */
+/*   Updated: 2024/03/05 15:53:20 by tjun-yu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <signal.h>
-#include "libft/c_libft.h"
+#include "libft/Libft.h"
 
-void	send(int pid, const char *message)
+int *dec_to_bit(int dec)
 {
-	if (message == NULL)
-		return ;
-	while (*message != 0);
+	static int bits[8];
+	for(int i = 0; i < 8; ++i)
+		bits[i] = (dec >> i) & 1;
+	return (bits);
+}
+
+int	bit_to_dec(int *bits)
+{
+	int c = 0;
+	for (int i = 0; i < 8; i++)
+		c += bits[i] << i;
+	return (c);
 }
 
 int	main(void)
 {
-	int num;
-
-	num = 3;
-	for(int j = 0; j < 256; ++j)
-	{
-		ft_printf("%d: ", j);
-		for(int i = 0; i < 8; ++i)
-			ft_printf("%d", (j >> i) & 1);
-		ft_printf("\n");
-	}
+	ft_printf("%c\n", bit_to_dec(dec_to_bit('a')));
 }
