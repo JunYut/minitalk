@@ -9,11 +9,15 @@ OBJ_DIR = obj/
 # Files
 CLIENT_SRC = client.c
 SERVER_SRC = server.c
+LIBFT = $(LIB_DIR)libft.a
 CLIENT = client
 SERVER = server
 
 # Rules & Recipes
-all: $(CLIENT) $(SERVER)
+all: $(LIBFT) $(CLIENT) $(SERVER)
+
+$(LIBFT):
+	make -C $(LIB_DIR)
 
 $(CLIENT): $(CLIENT_SRC)
 	$(CC) $(CFLAGS) $^ -o $@ -L$(LIB_DIR) -lft
