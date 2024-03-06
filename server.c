@@ -3,45 +3,49 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjun-yu <tjun-yu@student.42.fr>            +#+  +:+       +#+        */
+/*   By: we <we@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/05 13:23:23 by tjun-yu           #+#    #+#             */
-/*   Updated: 2024/03/05 15:21:18 by tjun-yu          ###   ########.fr       */
+/*   Created: 2024/03/06 11:52:59 by we                #+#    #+#             */
+/*   Updated: 2024/03/06 23:06:16 by we               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#define _POSIX_C_SOURCE 199309L
 #include <signal.h>
 #include <unistd.h>
-#include "libft/c_libft.h"
+#include "libft/Libft.h"
 
-void handle_sigint(int sig)
+
+void	receive(int signum, siginfo_t *info, void *context)
 {
-    static char c;
-	static int i;
+	static int	c;
+	static int	i;
 
-	if (i == 8)
+	if (i == 31)
 	{
-		ft_printf("%c", c);
-		c = 0;
+		write(1, &c, 1);
 		i = 0;
+		c = 0;
 	}
-	if (i < 8)
+	else
 	{
-		c += (sig == SIGUSR2) << i++;
+		c += (signum == SIGUSR1) << i++;
 	}
+	kill(info->si_pid, SIGUSR2);
+	(void)context;
 }
 
-int main()
+int	main(void)
 {
-	ft_printf("Server PID: %d\n", getpid());
+	struct sigaction	sa;
 
+	sa.sa_sigaction = receive;
+	sa.sa_flags = SA_SIGINFO;
+	ft_printf("PID: %d\n", getpid());
 	while (1)
 	{
-		ft_printf("Waiting for signal...\n");
-		signal(SIGUSR1, handle_sigint);
-		signal(SIGUSR2, handle_sigint);
+		sigaction(SIGUSR1, &sa, NULL);
+		sigaction(SIGUSR2, &sa, NULL);
 		pause();
 	}
-
-    return 0;
 }
