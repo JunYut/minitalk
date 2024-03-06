@@ -6,7 +6,7 @@
 /*   By: we <we@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 11:52:59 by we                #+#    #+#             */
-/*   Updated: 2024/03/06 23:06:16 by we               ###   ########.fr       */
+/*   Updated: 2024/03/06 23:36:14 by we               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include <signal.h>
 #include <unistd.h>
 #include "libft/Libft.h"
-
 
 void	receive(int signum, siginfo_t *info, void *context)
 {
