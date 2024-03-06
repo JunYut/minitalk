@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjun-yu <tjun-yu@student.42.fr>            +#+  +:+       +#+        */
+/*   By: we <we@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/05 13:23:23 by tjun-yu           #+#    #+#             */
-/*   Updated: 2024/03/05 15:21:18 by tjun-yu          ###   ########.fr       */
+/*   Created: 2024/03/04 14:49:44 by tjun-yu           #+#    #+#             */
+/*   Updated: 2024/03/06 10:47:10 by we               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <signal.h>
 #include <unistd.h>
-#include "libft/c_libft.h"
+#include "libft/Libft.h"
 
 void handle_sigint(int sig)
 {

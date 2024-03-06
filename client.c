@@ -3,42 +3,34 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjun-yu <tjun-yu@student.42.fr>            +#+  +:+       +#+        */
+/*   By: we <we@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 14:49:36 by tjun-yu           #+#    #+#             */
-/*   Updated: 2024/03/05 14:48:49 by tjun-yu          ###   ########.fr       */
+/*   Updated: 2024/03/06 10:46:42 by we               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <signal.h>
-#include "libft/c_libft.h"
+#include "libft/Libft.h"
 
-void	yeet(int pid, const char *message)
+int *dec_to_bit(int dec)
 {
-	int	i;
+	static int bits[8];
+	for(int i = 0; i < 8; ++i)
+		bits[i] = (dec >> i) & 1;
+	return (bits);
+}
 
-	if (message == NULL)
-		return ;
-	while (*message != 0)
-	{
-		i = -1;
-		while (++i < 8)
-		{
-			kill(pid, *message << i & 1 ? SIGUSR2 : SIGUSR1);
-		}
-		++message;
-	}
+int	bit_to_dec(int *bits)
+{
+	int c = 0;
+	for (int i = 0; i < 8; i++)
+		c += bits[i] << i;
+	return (c);
 }
 
 int	main(void)
 {
-	int	pid;
-
-	ft_printf("Enter server PID: ");
-	pid = ft_atoi(get_next_line(0));
-	ft_printf("pid: %d\n", pid);
-	yeet(pid, "Hello, world!");
-
-	return (0);
+	ft_printf("%c\n", bit_to_dec(dec_to_bit('a')));
 }
