@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: we <we@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: tjun-yu <tjun-yu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 11:53:05 by we                #+#    #+#             */
-/*   Updated: 2024/03/06 23:21:24 by we               ###   ########.fr       */
+/*   Updated: 2024/03/11 10:16:26 by tjun-yu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <signal.h>
 #include <unistd.h>
-#include "libft/Libft.h"
+#include "libft/c_libft.h"
 
 volatile sig_atomic_t	g_confirm = 0;
 

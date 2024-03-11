@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: we <we@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: tjun-yu <tjun-yu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 11:52:59 by we                #+#    #+#             */
-/*   Updated: 2024/03/06 23:36:14 by we               ###   ########.fr       */
+/*   Updated: 2024/03/11 10:16:14 by tjun-yu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #define _POSIX_C_SOURCE 199309L
 #include <signal.h>
 #include <unistd.h>
-#include "libft/Libft.h"
+#include "libft/c_libft.h"
 
 void	receive(int signum, siginfo_t *info, void *context)
 {
