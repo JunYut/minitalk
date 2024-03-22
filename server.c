@@ -6,7 +6,7 @@
 /*   By: tjun-yu <tjun-yu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 11:52:59 by we                #+#    #+#             */
-/*   Updated: 2024/03/11 10:16:14 by tjun-yu          ###   ########.fr       */
+/*   Updated: 2024/03/22 14:24:35 by tjun-yu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	main(void)
 
 	sa.sa_sigaction = receive;
 	sa.sa_flags = SA_SIGINFO;
-	ft_printf("PID: %d\n", getpid());
+	ft_printf("server PID: %d\n", getpid());
 	while (1)
 	{
 		sigaction(SIGUSR1, &sa, NULL);

@@ -6,7 +6,7 @@
 /*   By: tjun-yu <tjun-yu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 11:53:05 by we                #+#    #+#             */
-/*   Updated: 2024/03/11 10:16:26 by tjun-yu          ###   ########.fr       */
+/*   Updated: 2024/03/22 14:25:56 by tjun-yu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,11 @@ int	is_pid(char *str)
 
 void	confirm(int signum)
 {
-	write(1, "Bit received\n", 13);
+	static int	i;
+
+	if (i % 32 == 0 && i != 0)
+		write(1, "\n", 1);
+	ft_printf("Bit[%d] received\n", i++);
 	g_confirm = 1;
 	(void)signum;
 }
@@ -78,6 +82,7 @@ int	main(int argc, char *argv[])
 		ft_printf("Usage: %s <pid> <message>\n", argv[0]);
 		return (1);
 	}
+	ft_printf("client PID: %d\n", getpid());
 	send_message(ft_atoi(argv[1]), argv[2]);
 	return (0);
 }
