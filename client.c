@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tjun-yu <tjun-yu@student.42.fr>            +#+  +:+       +#+        */
+/*   By: we <we@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/06 11:53:05 by we                #+#    #+#             */
-/*   Updated: 2024/03/22 14:25:56 by tjun-yu          ###   ########.fr       */
+/*   Updated: 2024/03/26 22:00:53 by we               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ void	send_bit(int pid, int c)
 	i = -1;
 	while (++i < 32)
 	{
-		signal(SIGUSR2, confirm);
 		g_confirm = 0;
 		if (c >> i & 1)
 			kill(pid, SIGUSR1);
@@ -46,6 +45,17 @@ void	send_bit(int pid, int c)
 		while (!g_confirm)
 			pause();
 	}
+}
+
+void	confirm(int signum)
+{
+	static int	i;
+
+	if (i % 32 == 0 && i != 0)
+		write(1, "\n", 1);
+	ft_printf("Bit[%d] received\n", i++);
+	g_confirm = 1;
+	(void)signum;
 }
 
 int	is_pid(char *str)
@@ -64,17 +74,6 @@ int	is_pid(char *str)
 	return (1);
 }
 
-void	confirm(int signum)
-{
-	static int	i;
-
-	if (i % 32 == 0 && i != 0)
-		write(1, "\n", 1);
-	ft_printf("Bit[%d] received\n", i++);
-	g_confirm = 1;
-	(void)signum;
-}
-
 int	main(int argc, char *argv[])
 {
 	if (argc != 3 || !is_pid(argv[1]))
@@ -82,7 +81,8 @@ int	main(int argc, char *argv[])
 		ft_printf("Usage: %s <pid> <message>\n", argv[0]);
 		return (1);
 	}
-	ft_printf("client PID: %d\n", getpid());
+	ft_printf("Client PID: %d\n", getpid());
+	signal(SIGUSR2, confirm);
 	send_message(ft_atoi(argv[1]), argv[2]);
 	return (0);
 }
