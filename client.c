@@ -6,7 +6,7 @@
 /*   By: we <we@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 14:49:36 by tjun-yu           #+#    #+#             */
-/*   Updated: 2024/03/06 10:46:42 by we               ###   ########.fr       */
+/*   Updated: 2024/03/26 13:00:09 by we               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,39 @@
 #include <signal.h>
 #include "libft/Libft.h"
 
-int *dec_to_bit(int dec)
+void	receive(int sig, siginfo_t *info, void *ucontext);
+
+int	main(int argc, char *argv[])
 {
-	static int bits[8];
-	for(int i = 0; i < 8; ++i)
-		bits[i] = (dec >> i) & 1;
-	return (bits);
+	ft_printf("Client PID: %d\n", getpid());
+
+	struct sigaction	action;
+	action.sa_sigaction = receive;
+	action.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR1, &action, NULL);
+
+	kill(ft_atoi(argv[1]), SIGUSR1);
+	while (1)
+		pause();
+
+	ft_printf("Client exit\n");
+
+	(void)argc;
+	(void)argv;
 }
 
-int	bit_to_dec(int *bits)
+void	receive(int sig, siginfo_t *info, void *ucontext)
 {
-	int c = 0;
-	for (int i = 0; i < 8; i++)
-		c += bits[i] << i;
-	return (c);
-}
+	static int i;
 
-int	main(void)
-{
-	ft_printf("%c\n", bit_to_dec(dec_to_bit('a')));
+	ft_printf("Signal[%d] received\n", ++i);
+	ft_printf("Server PID: %d\n", info->si_pid);
+
+	for (int i = 0; i < 10000; i++)
+	{
+		kill(info->si_pid, SIGUSR1);
+	}
+
+	(void)sig;
+	(void)ucontext;
 }

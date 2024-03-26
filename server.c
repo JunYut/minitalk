@@ -6,42 +6,47 @@
 /*   By: we <we@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 14:49:44 by tjun-yu           #+#    #+#             */
-/*   Updated: 2024/03/06 10:47:10 by we               ###   ########.fr       */
+/*   Updated: 2024/03/26 12:48:26 by we               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <signal.h>
 #include <unistd.h>
+#include <limits.h>
 #include "libft/Libft.h"
 
-void handle_sigint(int sig)
-{
-    static char c;
-	static int i;
-
-	if (i == 8)
-	{
-		ft_printf("%c", c);
-		c = 0;
-		i = 0;
-	}
-	if (i < 8)
-	{
-		c += (sig == SIGUSR2) << i++;
-	}
-}
+void receive(int sig, siginfo_t *info, void *ucontext);
 
 int main()
 {
 	ft_printf("Server PID: %d\n", getpid());
 
+	struct sigaction	sa;
+	sa.sa_sigaction = receive;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_SIGINFO;
+
+	sigaction(SIGUSR1, &sa, NULL);
 	while (1)
 	{
-		ft_printf("Waiting for signal...\n");
-		signal(SIGUSR1, handle_sigint);
-		signal(SIGUSR2, handle_sigint);
 		pause();
 	}
 
     return 0;
+}
+
+void receive(int sig, siginfo_t *info, void *ucontext_t)
+{
+	static int PID;
+	static int i;
+
+	if (info->si_pid != PID)
+		i = 0;
+	PID = info->si_pid;
+	ft_printf("Signal[%d] received: %d\n", ++i, sig);
+	ft_printf("Client PID: %d\n", info->si_pid);
+	kill(info->si_pid, SIGUSR1);
+
+	(void)ucontext_t;
+	return;
 }
