@@ -1,58 +1,34 @@
 #include <signal.h>
 #include "libft/Libft.h"
 
-int	g_boolean = 1;
+void	receive(int sig, siginfo_t *info, void *ucontext_t);
 
-void	send_message(int pid, char *message);
-void	send_char(int pid, char c);
-void	receive(int sig, siginfo_t *info, void *ucontext);
-
-int	main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	ft_printf("Client PID: %d\n", getpid());
+	struct sigaction act;
+	act.sa_sigaction = receive;
+	act.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR1, &act, NULL);
 
-	struct sigaction	action1;
-	action1.sa_sigaction = receive;
-	action1.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &action1, NULL);
-
-	send_message(ft_atoi(argv[1]), argv[2]);
-
-	ft_printf("Client exit\n");
-
-	(void)argc;
-	(void)argv;
-}
-
-void	send_message(int pid, char *message)
-{
-	while (*message)
-	{
-		send_char(pid, *message);
-		message++;
-	}
-}
-
-void	send_char(int pid, char c)
-{
 	int i = -1;
-	while (++i < 8)
+	while (++i < 100000)
 	{
-		ft_printf("Sending bit[%d] %d\n", i + 1, (c >> i) & 1);
-		if ((c >> i) & 1)
-			kill(pid, SIGUSR2);
+		if (i & 1)
+			kill(ft_atoi(argv[1]), SIGUSR1);
 		else
-			kill(pid, SIGUSR1);
+			kill(ft_atoi(argv[1]), SIGUSR2);
 		pause();
 	}
+	ft_printf("All signals sent\n");
+
+	(void)argc;
+	return (0);
 }
 
-void	receive(int sig, siginfo_t *info, void *ucontext)
+void	receive(int sig, siginfo_t *info, void *ucontext_t)
 {
 	static int i;
-	g_boolean = 0;
+
 	ft_printf("Signal[%d] received: %d | PID: %d\n", ++i, sig, info->si_pid);
-	(void)sig;
-	(void)info;
-	(void)ucontext;
+	(void)ucontext_t;
 }
