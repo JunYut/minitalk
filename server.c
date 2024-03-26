@@ -8,6 +8,7 @@ int main(void)
 	struct sigaction act;
 	act.sa_sigaction = receive;
 	act.sa_flags = SA_SIGINFO;
+	sigemptyset(&act.sa_mask);
 	sigaction(SIGUSR1, &act, NULL);
 	sigaction(SIGUSR2, &act, NULL);
 
