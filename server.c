@@ -6,7 +6,7 @@
 /*   By: we <we@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 14:49:44 by tjun-yu           #+#    #+#             */
-/*   Updated: 2024/03/26 12:48:26 by we               ###   ########.fr       */
+/*   Updated: 2024/03/26 16:47:52 by we               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,13 +38,12 @@ int main()
 void receive(int sig, siginfo_t *info, void *ucontext_t)
 {
 	static int PID;
-	static int i;
+	static int i = -1;
 
 	if (info->si_pid != PID)
-		i = 0;
+		i = -1;
 	PID = info->si_pid;
-	ft_printf("Signal[%d] received: %d\n", ++i, sig);
-	ft_printf("Client PID: %d\n", info->si_pid);
+	ft_printf("Signal[%d] received: %d | Client PID: %d\n", ++i, sig, info->si_pid);
 	kill(info->si_pid, SIGUSR1);
 
 	(void)ucontext_t;
