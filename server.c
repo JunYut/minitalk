@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: we <we@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/04 14:49:44 by tjun-yu           #+#    #+#             */
-/*   Updated: 2024/03/26 16:47:52 by we               ###   ########.fr       */
+/*   Created: 2024/03/04 14:49:44 by tiun-yu           #+#    #+#             */
+/*   Updated: 2024/03/26 17:40:40 by we               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,13 @@ int main()
 {
 	ft_printf("Server PID: %d\n", getpid());
 
-	struct sigaction	sa;
-	sa.sa_sigaction = receive;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_SIGINFO;
+	struct sigaction	sig1;
+	sig1.sa_sigaction = receive;
+	sigemptyset(&sig1.sa_mask);
+	sig1.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR1, &sig1, NULL);
+	sigaction(SIGUSR2, &sig1, NULL);
 
-	sigaction(SIGUSR1, &sa, NULL);
 	while (1)
 	{
 		pause();
@@ -37,15 +38,18 @@ int main()
 
 void receive(int sig, siginfo_t *info, void *ucontext_t)
 {
-	static int PID;
-	static int i = -1;
+	static int c;
+	static int i = 0;
 
-	if (info->si_pid != PID)
-		i = -1;
-	PID = info->si_pid;
-	ft_printf("Signal[%d] received: %d | Client PID: %d\n", ++i, sig, info->si_pid);
+	if (i == 8)
+	{
+		write(1, &c, 1);
+		c = 0;
+		i = 0;
+	}
+	else
+		c += (sig == SIGUSR2) << ++i;
 	kill(info->si_pid, SIGUSR1);
 
 	(void)ucontext_t;
-	return;
 }

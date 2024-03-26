@@ -1,9 +1,11 @@
 #include <signal.h>
 #include "libft/Libft.h"
 
-int boolean = 1;
+int	g_boolean = 1;
 
-void	receive(int sig, siginfo_t *info, void *ucontext_t);
+void	send_message(int pid, char *message);
+void	send_char(int pid, char c);
+void	receive(int sig, siginfo_t *info, void *ucontext);
 
 int	main(int argc, char *argv[])
 {
@@ -14,14 +16,7 @@ int	main(int argc, char *argv[])
 	action1.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &action1, NULL);
 
-	// Send the first signal
-	kill(ft_atoi(argv[1]), SIGUSR1);
-
-	// Wait for acknowledgments
-	while (boolean)
-	{
-		pause();
-	}
+	send_message(ft_atoi(argv[1]), argv[2]);
 
 	ft_printf("Client exit\n");
 
@@ -29,18 +24,35 @@ int	main(int argc, char *argv[])
 	(void)argv;
 }
 
+void	send_message(int pid, char *message)
+{
+	while (*message)
+	{
+		send_char(pid, *message);
+		message++;
+	}
+}
+
+void	send_char(int pid, char c)
+{
+	int i = -1;
+	while (++i < 8)
+	{
+		ft_printf("Sending bit[%d] %d\n", i + 1, (c >> i) & 1);
+		if ((c >> i) & 1)
+			kill(pid, SIGUSR2);
+		else
+			kill(pid, SIGUSR1);
+		pause();
+	}
+}
+
 void	receive(int sig, siginfo_t *info, void *ucontext)
 {
 	static int i;
-
-	if (++i <= 1000000) {
-		// Send the next signal
-		kill(info->si_pid, SIGUSR1);
-		ft_printf("Signal[%d] received: %d | Server PID: %d\n", i, sig, info->si_pid);
-		return;
-	}
-	// ft_printf("PID: %d\n", getpid());
-	boolean = 0;
-
+	g_boolean = 0;
+	ft_printf("Signal[%d] received: %d | PID: %d\n", ++i, sig, info->si_pid);
+	(void)sig;
+	(void)info;
 	(void)ucontext;
 }
