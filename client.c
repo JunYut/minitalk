@@ -3,86 +3,55 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: we <we@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: tjun-yu <tjun-yu@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/06 11:53:05 by we                #+#    #+#             */
-/*   Updated: 2024/03/26 22:00:53 by we               ###   ########.fr       */
+/*   Created: 2024/03/27 10:20:51 by tjun-yu           #+#    #+#             */
+/*   Updated: 2024/03/27 10:33:30 by tjun-yu          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <signal.h>
-#include <unistd.h>
 #include "libft/c_libft.h"
 
-volatile sig_atomic_t	g_confirm = 0;
+void	send_bits(int pid, char c);
+void	confirm(int signal);
 
-void	send_message(int pid, char *message);
-void	send_bit(int pid, int c);
-void	confirm(int signum);
-int		is_pid(char *str);
-
-void	send_message(int pid, char *message)
-{
-	while (*message != 0)
-	{
-		send_bit(pid, *message++);
-	}
-	send_bit(pid, '\n');
-}
-
-void	send_bit(int pid, int c)
+int	main(int argc, char *argv[])
 {
 	int	i;
 
 	i = -1;
-	while (++i < 32)
+	while (argv[2][++i])
 	{
-		g_confirm = 0;
-		if (c >> i & 1)
+		signal(SIGUSR1, confirm);
+		signal(SIGUSR2, confirm);
+		send_bits(ft_atoi(argv[1]), argv[2][i]);
+	}
+	send_bits(ft_atoi(argv[1]), '\n');
+	ft_printf("All signals sent\n");
+	(void)argc;
+	return (0);
+}
+
+void	send_bits(int pid, char c)
+{
+	int	i;
+
+	i = -1;
+	while (++i < 8)
+	{
+		if ((c & (0x01 << i)) != 0)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		while (!g_confirm)
-			pause();
+		usleep(100);
 	}
 }
 
-void	confirm(int signum)
+void	confirm(int signal)
 {
 	static int	i;
 
-	if (i % 32 == 0 && i != 0)
-		write(1, "\n", 1);
-	ft_printf("Bit[%d] received\n", i++);
-	g_confirm = 1;
-	(void)signum;
-}
-
-int	is_pid(char *str)
-{
-	int	pid;
-
-	pid = ft_atoi(str);
-	while (*str)
-	{
-		if (!ft_isdigit(*str))
-			return (0);
-		++str;
-	}
-	if (kill(pid, 0) == -1)
-		return (0);
-	return (1);
-}
-
-int	main(int argc, char *argv[])
-{
-	if (argc != 3 || !is_pid(argv[1]))
-	{
-		ft_printf("Usage: %s <pid> <message>\n", argv[0]);
-		return (1);
-	}
-	ft_printf("Client PID: %d\n", getpid());
-	signal(SIGUSR2, confirm);
-	send_message(ft_atoi(argv[1]), argv[2]);
-	return (0);
+	ft_printf("Char[%d] received!\n", i++);
+	(void)signal;
 }
