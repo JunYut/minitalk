@@ -4,6 +4,7 @@
 volatile int boolean = 1;
 
 void	receive(int sig, siginfo_t *info, void *ucontext_t);
+void	linker(int sig, siginfo_t *info, void *ucontext_t);
 
 int main(int argc, char *argv[])
 {
@@ -11,6 +12,11 @@ int main(int argc, char *argv[])
 	act.sa_sigaction = receive;
 	act.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &act, NULL);
+
+	struct sigaction act2;
+	act2.sa_sigaction = linker;
+	act2.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR2, &act2, NULL);
 
 	int i = -1;
 	while (++i < 1000000)
@@ -34,6 +40,15 @@ void	receive(int sig, siginfo_t *info, void *ucontext_t)
 	static int i;
 
 	ft_printf("Signal[%d] received: %d | PID: %d\n", ++i, sig, info->si_pid);
+	kill(getpid(), SIGUSR2);
+	(void)ucontext_t;
+}
+
+void	linker(int sig, siginfo_t *info, void *ucontext_t)
+{
+	usleep(10000);
 	boolean = 0;
+	(void)sig;
+	(void)info;
 	(void)ucontext_t;
 }
