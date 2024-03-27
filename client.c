@@ -1,54 +1,57 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   client.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tjun-yu <tjun-yu@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/27 10:20:51 by tjun-yu           #+#    #+#             */
+/*   Updated: 2024/03/27 10:22:28 by tjun-yu          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <signal.h>
 #include "libft/Libft.h"
 
-volatile int boolean = 1;
+void	send_bits(int pid, char c);
+void	confirm(int signal);
 
-void	receive(int sig, siginfo_t *info, void *ucontext_t);
-void	linker(int sig, siginfo_t *info, void *ucontext_t);
-
-int main(int argc, char *argv[])
+int	main(int argc, char *argv[])
 {
-	struct sigaction act;
-	act.sa_sigaction = receive;
-	act.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &act, NULL);
+	int	i;
 
-	struct sigaction act2;
-	act2.sa_sigaction = linker;
-	act2.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR2, &act2, NULL);
-
-	int i = -1;
-	while (++i < 1000000)
+	i = -1;
+	while (argv[2][++i])
 	{
-		boolean = 1;
-		if (i & 1)
-			kill(ft_atoi(argv[1]), SIGUSR1);
-		else
-			kill(ft_atoi(argv[1]), SIGUSR2);
-		while (boolean)
-			pause();
+		signal(SIGUSR1, confirm);
+		signal(SIGUSR2, confirm);
+		send_bits(ft_atoi(argv[1]), argv[2][i]);
 	}
+	send_bits(ft_atoi(argv[1]), '\n');
 	ft_printf("All signals sent\n");
-
 	(void)argc;
 	return (0);
 }
 
-void	receive(int sig, siginfo_t *info, void *ucontext_t)
+void	send_bits(int pid, char c)
 {
-	static int i;
+	int	i;
 
-	ft_printf("Signal[%d] received: %d | PID: %d\n", ++i, sig, info->si_pid);
-	kill(getpid(), SIGUSR2);
-	(void)ucontext_t;
+	i = -1;
+	while (++i < 8)
+	{
+		if ((c & (0x01 << i)) != 0)
+			kill(pid, SIGUSR1);
+		else
+			kill(pid, SIGUSR2);
+		usleep(100);
+	}
 }
 
-void	linker(int sig, siginfo_t *info, void *ucontext_t)
+void	confirm(int signal)
 {
-	usleep(10000);
-	boolean = 0;
-	(void)sig;
-	(void)info;
-	(void)ucontext_t;
+	static int	i;
+
+	ft_printf("Char[%d] received!\n", i++);
+	(void)signal;
 }
